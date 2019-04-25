@@ -72,6 +72,7 @@ Inductive mode : Set :=
 
 Inductive type : Set :=
   | TNat : type
+  | TBool: type
   | TPtr : mode -> type -> type
   | TStruct : struct -> type
   | TArray : nat -> type -> type.
@@ -81,6 +82,7 @@ Inductive type : Set :=
 
 Inductive word_type : type -> Prop :=
   | WTNat : word_type TNat
+  | WTBool: word_type TBool
   | WTPtr : forall m w, word_type (TPtr m w).
 
 Hint Constructors word_type.
@@ -107,6 +109,7 @@ Definition structdef := StructDef.t fields.
 
 Inductive type_wf (D : structdef) : type -> Prop :=
   | WFTNat : type_wf D TNat
+  | WFTBool: type_wf D TBool
   | WFTPtr : forall m w, type_wf D (TPtr m w)
   | WFTStruct : forall T,
       (exists (fs : fields), StructDef.MapsTo T fs D) ->
