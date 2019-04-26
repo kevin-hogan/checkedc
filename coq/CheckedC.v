@@ -1897,6 +1897,17 @@ Proof.
       intros k HK.
       simpl in HK.
       assert (k = 0) by omega; subst; clear HK.
+      exists 0. exists TBool.
+      repeat split; eauto.
+      apply Heap.add_1; eauto.
+    * apply heap_add_preserves_wf; auto.
+  - split; [ | split].
+    * apply well_typed_preserved; eauto.
+    * apply TyLit; eauto.
+      eapply TyLitC; simpl; eauto.
+      intros k HK.
+      simpl in HK.
+      assert (k = 0) by omega; subst; clear HK.
       exists 0. exists (TPtr m w).
       repeat split; eauto.
       apply Heap.add_1; eauto.
