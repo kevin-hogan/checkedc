@@ -534,6 +534,8 @@ Definition empty_scope := empty_set (nat * type).
 Inductive well_typed_lit (D : structdef) (H : heap) : scope -> nat -> type -> Prop :=
   | TyLitInt : forall s n,
       well_typed_lit D H s n TNat
+  | TyLitBool : forall s n,
+      well_typed_lit D H s n TBool
   | TyLitArray : forall s n w,
       well_typed_lit D H s n (TPtr Checked (TArray 0 w))
   | TyLitU : forall s n w,
@@ -565,6 +567,7 @@ Hint Constructors well_typed_lit.
 Lemma well_typed_lit_ind' :
   forall (D : structdef) (H : heap) (P : scope -> nat -> type -> Prop),
     (forall (s : scope) (n : nat), P s n TNat) ->
+    (forall (s : scope) (n : nat), P s n TBool) ->
     (forall (s : scope) (n : nat) (w : type), P s n (TPtr Checked (TArray 0 w))) ->
        (forall (s : scope) (n : nat) (w : type), P s n (TPtr Unchecked w)) ->
        (forall (s : scope) (t : type), P s 0 t) ->
@@ -582,6 +585,7 @@ Lemma well_typed_lit_ind' :
 Proof.
   intros D H P.
   intros HTyLitInt
+         HTyLitBool
          HTyLitArray
          HTyLitU
          HTyLitZero
@@ -590,6 +594,7 @@ Proof.
   refine (fix F s n t Hwtl :=
             match Hwtl with
             | TyLitInt _ _ s' n' => HTyLitInt s' n'
+            | TyLitBool _ _ s' n' => HTyLitBool s' n'
             | TyLitArray _ _ s' n' w' => HTyLitArray s' n' w'
             | TyLitU _ _ s' n' w' => HTyLitU s' n' w'
             | TyLitZero _ _ s' t' => HTyLitZero s' t'
@@ -2525,6 +2530,12 @@ Proof.
       * eapply TyLitC; simpl in *; eauto.
         intros k Hk; simpl in *.
         assert (k = 0) by omega; subst.
+        exists N'. exists TBool.
+        repeat (split; eauto).
+        rewrite plus_0_r; eauto.
+      * eapply TyLitC; simpl in *; eauto.
+        intros k Hk; simpl in *.
+        assert (k = 0) by omega; subst.
         exists N'. exists (TPtr m w).
         repeat (split; eauto).
         rewrite plus_0_r; eauto.
@@ -2697,6 +2708,10 @@ Proof.
       rewrite Nat.add_0_r in *.
       inv HNth.
       exists n'; eauto.
+    + destruct (H4 0) as [n' [t' [HNth [HMap HWT]]]]; auto.
+      rewrite Nat.add_0_r in *.
+      inv HNth.
+      exists n'; eauto.
 Qed.
 
 Lemma well_typed_heap_in_array : forall n D H l w,
@@ -2842,6 +2857,7 @@ Proof with eauto 20 with Preservation.
       inv HHwf.
       inv H1.
       * idtac...
+      * idtac...
       * destruct m.
         { specialize (HChkPtr eq_refl w). exfalso. apply HChkPtr. reflexivity. }
         { idtac... }
@@ -2875,6 +2891,12 @@ Proof with eauto 20 with Preservation.
               inv HT'.
               rewrite Nat.add_0_r in HM'.
               assert (Hyp: (N, TNat) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
+              inv Hyp; subst; eauto.
+            + inv H0; simpl in *.
+              destruct (H4 0) as [N [T' [HT' [HM' HWT']]]]; [omega | ].
+              inv HT'.
+              rewrite Nat.add_0_r in HM'.
+              assert (Hyp: (N, TBool) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
               inv Hyp; subst; eauto.
             + inv H0; simpl in *.
               destruct (H4 0) as [N [T' [HT' [HM' HWT']]]]; [omega | ].
