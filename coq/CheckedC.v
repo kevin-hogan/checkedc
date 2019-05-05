@@ -2847,9 +2847,7 @@ Proof with eauto 20 with Preservation.
     destruct E; inversion H1; simpl in *; subst.
     + clear H0. clear H7. inv H4. inv HTy.
       inv HHwf.
-      inv H1.
-      * idtac...
-      * idtac...
+      inv H1; try(idtac; auto).
       * destruct m.
         { specialize (HChkPtr eq_refl w). exfalso. apply HChkPtr. reflexivity. }
         { idtac... }
@@ -2877,24 +2875,16 @@ Proof with eauto 20 with Preservation.
           - exfalso.
             eapply heap_wf_maps_nonzero; eauto.
           - inversion H3.
-          - inv Hw; simpl in*; subst; simpl in *.
-            + inv H0; simpl in *.
-              destruct (H4 0) as [N [T' [HT' [HM' HWT']]]]; [omega | ].
-              inv HT'.
-              rewrite Nat.add_0_r in HM'.
-              assert (Hyp: (N, TNat) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
+          - inv Hw; simpl in*; subst; simpl in *;
+            inv H0; simpl in *;
+            destruct (H4 0) as [N [T' [HT' [HM' HWT']]]];
+            [omega | | omega | | omega | ];
+            inv HT'; rewrite Nat.add_0_r in HM'.
+            + assert (Hyp: (N, TNat) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
               inv Hyp; subst; eauto.
-            + inv H0; simpl in *.
-              destruct (H4 0) as [N [T' [HT' [HM' HWT']]]]; [omega | ].
-              inv HT'.
-              rewrite Nat.add_0_r in HM'.
-              assert (Hyp: (N, TBool) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
+            + assert (Hyp: (N, TBool) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
               inv Hyp; subst; eauto.
-            + inv H0; simpl in *.
-              destruct (H4 0) as [N [T' [HT' [HM' HWT']]]]; [omega | ].
-              inv HT'.
-              rewrite Nat.add_0_r in HM'.
-              assert (Hyp: (N, TPtr m w) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
+            + assert (Hyp: (N, TPtr m w) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
               inv Hyp; subst; eauto.
               apply TyLit.
 
