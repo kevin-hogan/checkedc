@@ -2520,23 +2520,18 @@ Proof.
         ) by auto.
       rewrite <- HNth in Hnth'.
       inv Hnth'.
-      inv Hwt.
-      * eapply TyLitC; simpl in *; eauto.
-        intros k Hk; simpl in *.
-        assert (k = 0) by omega; subst.
-        exists N'. exists TNat.
+      inv Hwt;
+      eapply TyLitC; simpl in *; eauto;
+      intros k Hk; simpl in *;
+      assert (k = 0) by omega; subst;
+      exists N'.
+      * exists TNat.
         repeat (split; eauto).
         rewrite plus_0_r; eauto.
-      * eapply TyLitC; simpl in *; eauto.
-        intros k Hk; simpl in *.
-        assert (k = 0) by omega; subst.
-        exists N'. exists TBool.
+      * exists TBool.
         repeat (split; eauto).
         rewrite plus_0_r; eauto.
-      * eapply TyLitC; simpl in *; eauto.
-        intros k Hk; simpl in *.
-        assert (k = 0) by omega; subst.
-        exists N'. exists (TPtr m w).
+      * exists (TPtr m w).
         repeat (split; eauto).
         rewrite plus_0_r; eauto.
 
