@@ -2699,19 +2699,11 @@ Proof.
     apply Contra in HIn.
     omega.
   - inv H3.
-  - inv Hwt; simpl in *; inv H1.
-    + destruct (H4 0) as [n' [t' [HNth [HMap HWT]]]]; auto.
-      rewrite Nat.add_0_r in *.
-      inv HNth.
-      exists n'; eauto.
-    + destruct (H4 0) as [n' [t' [HNth [HMap HWT]]]]; auto.
-      rewrite Nat.add_0_r in *.
-      inv HNth.
-      exists n'; eauto.
-    + destruct (H4 0) as [n' [t' [HNth [HMap HWT]]]]; auto.
-      rewrite Nat.add_0_r in *.
-      inv HNth.
-      exists n'; eauto.
+  - inv Hwt; simpl in *; inv H1;
+    destruct (H4 0) as [n' [t' [HNth [HMap HWT]]]]; auto;
+    rewrite Nat.add_0_r in *;
+    inv HNth;
+    exists n'; eauto.
 Qed.
 
 Lemma well_typed_heap_in_array : forall n D H l w,
