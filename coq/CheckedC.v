@@ -1884,14 +1884,14 @@ Proof.
   unfold allocate_meta in *.
   unfold pbind in *; simpl in *.
   destruct w; simpl in *; eauto; inv Alloc; simpl in *; eauto.
-  - split; [| split].
+  - split; [ | split].
     * apply well_typed_preserved; eauto.
     * apply TyLit; eauto.
       eapply TyLitC; simpl; eauto.
       intros k HK.
       simpl in HK.
       assert (k = 0) by omega; subst; clear HK.
-      exists 0. exists TNat.
+      exists 0. eexists.
       repeat split; eauto.
       apply Heap.add_1; eauto.
     * apply heap_add_preserves_wf; auto.
@@ -1902,7 +1902,7 @@ Proof.
       intros k HK.
       simpl in HK.
       assert (k = 0) by omega; subst; clear HK.
-      exists 0. exists TBool.
+      exists 0. eexists.
       repeat split; eauto.
       apply Heap.add_1; eauto.
     * apply heap_add_preserves_wf; auto.
@@ -1913,7 +1913,7 @@ Proof.
       intros k HK.
       simpl in HK.
       assert (k = 0) by omega; subst; clear HK.
-      exists 0. exists (TPtr m w).
+      exists 0. eexists.
       repeat split; eauto.
       apply Heap.add_1; eauto.
     * apply heap_add_preserves_wf; auto.
