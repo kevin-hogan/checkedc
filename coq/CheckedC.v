@@ -1890,40 +1890,18 @@ Proof.
   unfold allocate.
   unfold allocate_meta in *.
   unfold pbind in *; simpl in *.
-  destruct w; simpl in *; eauto; inv Alloc; simpl in *; eauto.
-  - split; [ | split].
-    * apply well_typed_preserved; eauto.
-    * apply TyLit; eauto.
-      eapply TyLitC; simpl; eauto.
-      intros k HK.
-      simpl in HK.
-      assert (k = 0) by omega; subst; clear HK.
-      exists 0. eexists.
-      repeat split; eauto.
-      apply Heap.add_1; eauto.
-    * apply heap_add_preserves_wf; auto.
-  - split; [ | split].
-    * apply well_typed_preserved; eauto.
-    * apply TyLit; eauto.
-      eapply TyLitC; simpl; eauto.
-      intros k HK.
-      simpl in HK.
-      assert (k = 0) by omega; subst; clear HK.
-      exists 0. eexists.
-      repeat split; eauto.
-      apply Heap.add_1; eauto.
-    * apply heap_add_preserves_wf; auto.
-  - split; [ | split].
-    * apply well_typed_preserved; eauto.
-    * apply TyLit; eauto.
-      eapply TyLitC; simpl; eauto.
-      intros k HK.
-      simpl in HK.
-      assert (k = 0) by omega; subst; clear HK.
-      exists 0. eexists.
-      repeat split; eauto.
-      apply Heap.add_1; eauto.
-    * apply heap_add_preserves_wf; auto.
+  destruct w; simpl in *; eauto; inv Alloc; simpl in *; eauto;
+  try solve [split; [ | split];
+      [apply well_typed_preserved; eauto
+      | apply TyLit; eauto;
+      eapply TyLitC; simpl; eauto;
+      intros k HK;
+      simpl in HK;
+      assert (k = 0) by omega; subst; clear HK;
+      exists 0; eexists;
+      repeat split; eauto;
+      apply Heap.add_1; eauto
+      | apply heap_add_preserves_wf; auto]].
   - split.
     * unfold allocate in H1.
       unfold allocate_meta in H1.
@@ -2531,18 +2509,10 @@ Proof.
       eapply TyLitC; simpl in *; eauto;
       intros k Hk; simpl in *;
       assert (k = 0) by omega; subst;
-      exists N'.
-      * exists TNat.
-        repeat (split; eauto).
-        rewrite plus_0_r; eauto.
-      * exists TBool.
-        repeat (split; eauto).
-        rewrite plus_0_r; eauto.
-      * exists (TPtr m w).
-        repeat (split; eauto).
-        rewrite plus_0_r; eauto.
-
-        assert (HEmpty : empty_scope = set_remove_all (n, TPtr Checked (TStruct T))
+      exists N'; eexists; repeat (split; eauto);
+      try(rewrite plus_0_r; eauto).
+      (* For TPtr m w *)
+      * assert (HEmpty : empty_scope = set_remove_all (n, TPtr Checked (TStruct T))
                                              ((n, TPtr Checked (TStruct T)) :: nil)).
         { unfold set_remove_all.
           destruct (eq_dec_nt (n, TPtr Checked (TStruct T)) (n, TPtr Checked (TStruct T))); auto.
@@ -2879,16 +2849,10 @@ Proof with eauto 20 with Preservation.
           - inversion H3.
           - inv Hw; simpl in*; subst; simpl in *;
             inv H0; simpl in *;
-            destruct (H4 0) as [N [T' [HT' [HM' HWT']]]];
-            [omega | | omega | | omega | ];
-            inv HT'; rewrite Nat.add_0_r in HM'.
-            + assert (Hyp: (N, TNat) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
-              inv Hyp; subst; eauto.
-            + assert (Hyp: (N, TBool) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
-              inv Hyp; subst; eauto.
-            + assert (Hyp: (N, TPtr m w) = (n1, t1)) by (eapply HeapFacts.MapsTo_fun; eauto).
-              inv Hyp; subst; eauto.
-              apply TyLit.
+            destruct (H4 0) as [N [T' [HT' [HM' HWT']]]]; try(omega);
+            inv HT'; rewrite Nat.add_0_r in HM'; eapply HeapFacts.MapsTo_fun in H9;
+            try (eauto); inv H9; subst; auto.
+            + apply TyLit.
 
               assert (Hyp: set_remove_all (n0, TPtr Checked (TPtr m w))
                                      ((n0,TPtr Checked (TPtr m w))::nil) = empty_scope).
