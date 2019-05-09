@@ -77,7 +77,7 @@ Inductive type : Set :=
   | TStruct : struct -> type
   | TArray : nat -> type -> type.
 
-(** Word types, <<t>>, are either numbers, [WTNat], or pointers, [WTPtr].
+(** Word types, <<t>>, are either numbers, [WTNat], bools, [WTBool], or pointers, [WTPtr].
     Pointers must be annotated with a [mode] and a (compound) [type]. *)
 
 Inductive word_type : type -> Prop :=
@@ -153,6 +153,7 @@ Inductive expression : Set :=
   | EMalloc : type -> expression
   | ECast : type -> expression -> expression
   | EPlus : expression -> expression -> expression
+  | EIfElse : expression -> expression -> expression -> expression
   | EFieldAddr : expression -> field -> expression
   | EDeref : expression -> expression
   | EAssign : expression -> expression -> expression
@@ -181,6 +182,11 @@ Inductive expr_wf (D : structdef) : expression -> Prop :=
       expr_wf D e1 ->
       expr_wf D e2 ->
       expr_wf D (EPlus e1 e2)
+  | WFEIfElse : forall b1 et ef,
+      expr_wf D b1 ->
+      expr_wf D et ->
+      expr_wf D ef ->
+      expr_wf D (EIfElse b1 et ef)
   | WFEFieldAddr : forall e f,
       expr_wf D e ->
       expr_wf D (EFieldAddr e f)
@@ -208,6 +214,7 @@ Fixpoint subst (x : var) (v : expression) (e : expression) : expression :=
   | EMalloc _ => e
   | ECast t e' => ECast t (subst x v e')
   | EPlus e1 e2 => EPlus (subst x v e1) (subst x v e2)
+  | EIfElse b1 et ef => EIfElse (subst x v b1) (subst x v et) (subst x v ef)
   | EFieldAddr e' f => EFieldAddr (subst x v e') f
   | EDeref e' => EDeref (subst x v e')
   | EAssign e1 e2 => EAssign (subst x v e1) (subst x v e2)
