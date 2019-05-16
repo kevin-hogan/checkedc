@@ -896,6 +896,7 @@ Proof with eauto 20 with Progress.
                      env m x e1 t1 e2 t HTy1 IH1 HTy2 IH2                   | (* Let-Expr *)
                      env m e m' T fs i fi ti HTy IH HWf1 HWf2               | (* Field Addr *)
                      env m e1 e2 HTy1 IH1 HTy2 IH2                          | (* Addition *)
+                     env m b et ef T HTy1 IH1 HTy2 IH2 HTy3 IH3             | (* IfElse *)
                      env m w                                                | (* Malloc *)
                      env m e t HTy IH                                       | (* Unchecked *)
                      env m t e t' HChkPtr HTy IH                            | (* Cast *)
@@ -1004,6 +1005,26 @@ Proof with eauto 20 with Progress.
     + (* `EPlus e1 e2` must be unchecked, since `e1` is *)
       right.
       ctx (EPlus e1 e2) (in_hole e1 (CPlusL CHole e2)).
+      destruct HUnchk1...
+  (* Case: TyIfElse *)
+  - (* `EPlus e1 e2` isn't a value *)
+    right.
+    (* Invoke the IH on `b` *)
+    destruct IH1 as [ HVal1 | [ HRed1 | HUnchk1 ] ].
+    (* Case: `b` is a value *)
+    + left.
+      inversion HVal1.
+      induction n.
+      * eapply step_implies_reduces. apply SIfElseFalse. reflexivity.
+      * eapply step_implies_reduces. apply SIfElseTrue. discriminate.
+    (* Case: `b` reduces*)
+    + (* We can take a step by reducing `b` *)
+      left.
+      ctx (EIfElse b et ef) (in_hole b (CIfElseGuard CHole et ef))...
+    (* Case: `e1` is unchecked *)
+    + (* `EIfElse b et ef` must be unchecked, since `b` is *)
+      right.
+      ctx (EIfElse b et ef) (in_hole b (CIfElseGuard CHole et ef)).
       destruct HUnchk1...
   (* Case: TyMalloc *)
   - (* `EMalloc w` isn't a value *)
