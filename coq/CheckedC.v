@@ -674,6 +674,11 @@ Inductive well_typed { D : structdef } { H : heap } : env -> mode -> expression 
       well_typed env m e1 TNat ->
       well_typed env m e2 TNat ->
       well_typed env m (EPlus e1 e2) TNat
+  | TyIfElse : forall env m b et ef t,
+      well_typed env m b TBool ->
+      well_typed env m et t ->
+      well_typed env m ef t ->
+      well_typed env m (EIfElse b et ef) t
   | TyMalloc : forall env m w,
       (forall l t, w = TArray l t -> l > 0) ->
       well_typed env m (EMalloc w) (TPtr Checked w)
