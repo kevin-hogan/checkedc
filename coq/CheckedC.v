@@ -422,6 +422,16 @@ Inductive step (D : structdef) : heap -> expression -> heap -> result -> Prop :=
       step D
         H (EPlus (ELit 0 (TPtr Checked (TArray l t))) (ELit n2 TNat))
         H RNull
+  | SIfElseTrue : forall H n t et ef,
+      n <> 0 ->
+      step D
+        H (EIfElse (ELit n t) et ef)
+        H (RExpr et)
+  | SIfElseFalse : forall H n t et ef,
+      n = 0 ->
+      step D
+        H (EIfElse (ELit n t) et ef)
+        H (RExpr ef)   
   | SCast : forall H t n t',
       step D
         H (ECast t (ELit n t'))
