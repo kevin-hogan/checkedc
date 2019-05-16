@@ -321,6 +321,9 @@ Inductive context : Set :=
   | CLet : var -> context -> expression -> context
   | CPlusL : context -> expression -> context
   | CPlusR : nat -> type -> context -> context
+  | CIfElseGuard: context -> expression -> expression -> context
+  | CIfElseTrue: nat -> type -> context -> expression -> context
+  | CIfElseFalse: nat -> type -> expression -> context -> context
   | CFieldAddr : context -> field -> context
   | CCast : type -> context -> context
   | CDeref : context -> context
@@ -334,6 +337,9 @@ Fixpoint in_hole (e : expression) (E : context) : expression :=
   | CLet x E' e' => ELet x (in_hole e E') e'
   | CPlusL E' e' => EPlus (in_hole e E') e'
   | CPlusR n t E' => EPlus (ELit n t) (in_hole e E')
+  | CIfElseGuard E' et' ef' => EIfElse (in_hole e E') et' ef'
+  | CIfElseTrue n t E' ef' => EIfElse (ELit n t) (in_hole e E') ef'
+  | CIfElseFalse n t et' E' => EIfElse (ELit n t) et' (in_hole e E')
   | CFieldAddr E' f => EFieldAddr (in_hole e E') f
   | CCast t E' => ECast t (in_hole e E')
   | CDeref E' => EDeref (in_hole e E')
@@ -348,6 +354,9 @@ Fixpoint mode_of (E : context) : mode :=
   | CLet _ E' _ => mode_of E'
   | CPlusL E' _ => mode_of E'
   | CPlusR _ _ E' => mode_of E'
+  | CIfElseGuard E' _ _ => mode_of E'
+  | CIfElseTrue _ _ E' _ => mode_of E'
+  | CIfElseFalse _ _ _ E' => mode_of E'
   | CFieldAddr E' _ => mode_of E'
   | CCast _ E' => mode_of E'
   | CDeref E' => mode_of E'
@@ -362,6 +371,9 @@ Fixpoint compose (E_outer : context) (E_inner : context) : context :=
   | CLet x E' e' => CLet x (compose E' E_inner) e'
   | CPlusL E' e' => CPlusL (compose E' E_inner) e'
   | CPlusR n t E' => CPlusR n t (compose E' E_inner)
+  | CIfElseGuard E' et' ef' => CIfElseGuard (compose E' E_inner) et' ef'
+  | CIfElseTrue n t E' ef' => CIfElseTrue n t (compose E' E_inner) ef'
+  | CIfElseFalse n t et' E' => CIfElseFalse n t et' (compose E' E_inner)
   | CFieldAddr E' f => CFieldAddr (compose E' E_inner) f
   | CCast t E' => CCast t (compose E' E_inner)
   | CDeref E' => CDeref (compose E' E_inner)
