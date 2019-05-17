@@ -5,7 +5,8 @@ semantics (dynamic and static), and metatheory of core Checked C.
 Mechanization was carried out with The Coq Proof Assistant,
 version 8.8 (Nov 2018).
 
-The development depends only on the Coq standard library, and related tooling (`coqdoc`, `coq_makefile`, etc.)
+The development depends on the Coq standard library, related tooling (`coqdoc`, `coq_makefile`, etc.),
+and the Coq extended library (https://github.com/coq-ext-lib/coq-ext-lib).
 
 ## Building
 
