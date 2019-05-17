@@ -2767,6 +2767,7 @@ Proof with eauto 20 with Preservation.
                     env m x e1 t1 e2 t HTy1 IH1 HTy2 IH2                  | (* Let-Expr *)
                     env m e m' T fs i fi ti HTy IH HWf1 HWf2              | (* Field Addr *)
                     env m e1 e2 HTy1 IH1 HTy2 IH2                         | (* Addition *)
+                    env m b et ef T HTy1 IH1 HTy2 IH2 HTy3 IH3            | (* IfElse *)
                     env m w                                               | (* Malloc *)
                     env m e t HTy IH                                      | (* Unchecked *)
                     env m t e t' HChkPtr HTy IH                           | (* Cast *)
@@ -2850,6 +2851,18 @@ Proof with eauto 20 with Preservation.
     + clear H1. rename e into e1_redex. rename e'0 into e1_redex'. edestruct IH1; idtac...
       inv HHwf; eauto.
     + clear H1. rename e into e2_redex. rename e'0 into e2_redex'. edestruct IH2; idtac...
+      inv HHwf; eauto.
+  (* T-IfElse *)
+  - inv Hreduces.
+    destruct E; inversion H1; simpl in *; subst.
+    + clear H0. clear H7. rename e'0 into e'. inv H4.
+      * inv HTy1...
+      * inv HTy1...
+    + clear H1. rename e into b_redex. rename e'0 into b_redex'. edestruct IH1; idtac...
+      inv HHwf; eauto.
+    + clear H1. rename e into et_redex. rename e'0 into et_redex'. edestruct IH2; idtac...
+      inv HHwf; eauto.
+    + clear H1. rename e into ef_redex. rename e'0 into ef_redex'. edestruct IH3; idtac...
       inv HHwf; eauto.
   (* T-Malloc *)
   - inv Hreduces.
