@@ -1007,7 +1007,7 @@ Proof with eauto 20 with Progress.
       ctx (EPlus e1 e2) (in_hole e1 (CPlusL CHole e2)).
       destruct HUnchk1...
   (* Case: TyIfElse *)
-  - (* `EPlus e1 e2` isn't a value *)
+  - (* `EIfElse b et ef` isn't a value *)
     right.
     (* Invoke the IH on `b` *)
     destruct IH1 as [ HVal1 | [ HRed1 | HUnchk1 ] ].
@@ -1021,7 +1021,7 @@ Proof with eauto 20 with Progress.
     + (* We can take a step by reducing `b` *)
       left.
       ctx (EIfElse b et ef) (in_hole b (CIfElseGuard CHole et ef))...
-    (* Case: `e1` is unchecked *)
+    (* Case: `b` is unchecked *)
     + (* `EIfElse b et ef` must be unchecked, since `b` is *)
       right.
       ctx (EIfElse b et ef) (in_hole b (CIfElseGuard CHole et ef)).
